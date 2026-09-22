@@ -1,5 +1,7 @@
 # deluNet architecture
 
+**Pre-Norm encoder-only transformer with SwiGLU FFNs and a CLS classification head**
+
 ### Blueprint
 
 * Linear projection of scalar inputs.
@@ -19,11 +21,11 @@
 
 ### Diagramatically:
 
-    20 raw features
+    F raw features
         ↓
     feature embeddings
         ↓
-    20 × d_model representations
+    F × d representations
         ↓
     Prepend [CLS]
         ↓
@@ -44,7 +46,7 @@
         ↓
     [CLS]
         ↓
-    64-dimensional global representation
+    d-dimensional global representation
         ↓
     Linear classification head
         ↓

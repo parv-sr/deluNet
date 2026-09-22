@@ -11,3 +11,5 @@ wheels/
 
 # lockfiles
 *.lock
+src/
+uv.lock
