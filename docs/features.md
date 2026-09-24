@@ -23,6 +23,7 @@
 - group outings/month
 - introductions to close friends
 - invitations to social events
+- Mode of meeting
 
 ### Bin D: Objective observable behaviour
 
@@ -36,6 +37,8 @@
 - Ghosting events
 - Conflict frequency/month
 - Physical meeting frequency
+- Sexual orientation, if applicable
+- Age
 
 
 ## Bins as per chatGPT's suggestions

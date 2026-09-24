@@ -148,14 +148,51 @@ class SwiGLU:
     def _project(self) -> None:
         self.W_gate = np.zeros((config.d_model, config.hidden_dim))
         self.W_up = np.zeros((config.d_model, config.hidden_dim))
+        self.W_down = np.zeros((config.hidden_dim, config.d_model))
 
         self.X_gate = self.x @ self.W_gate
         self.X_up = self.x @ self.W_up
 
     def forward(self) -> np.ndarray:
-        pass            
+        for idx, _ in enumerate(self.X_gate):
+            Helper.swish(self.X_gate[idx])
+
+        up_proj = np.zeros((config.d_model, config.hidden_dim))
+
+        for idx1, item1 in enumerate(self.X_gate):
+            for idx2, item2 in enumerate(self.X_gate):
+                up_proj[idx1][idx2] = self.X_gate[idx][idx] * self.X_up[idx][idx]
+
+        down_proj = up_proj @ self.W_down
+
+        return down_proj
+
+
+                    
 
 class TransformerBlock:
-    def __init__(self) -> None:
-        in_matrix: np.ndarray
+    def __init__(self, x: np.ndarray, rms_norm: RMSNorm, mha: MultiHeadAttention, swiglu: SwiGLU) -> None:
+        self.x = x
+        self.rms = rms_norm
+        self.mha = mha
+        self.swiglu = swiglu
+
+    def forward(self) -> np.ndarray:
+        normalised_x = self.rms.forward(self.x)            # First pre-RMSNorm
+
+        attn_x = self.mha.forward(normalised_x)            # Normalised input matrix passed to MHA
+
+        self.x = self.x + attn_x                           # First residual connection
+
+        normalised_x = self.rms.forward(self.x)            # Second RMSNorm
+
+        swiglu_x = self.swiglu.forward(normalised_x)       # SwiGLU FFN & activation
+
+        self.x = self.x + swiglu_x                         # Second residual connection
+
+        logits = self.x[1]                                 # Extract CLS token
+
+        probabilities = Helper.softmax(logits)             # Apply softmax on logits
+
+        return probabilities                               # Obtain class probabilities
         
